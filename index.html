@@ -389,7 +389,7 @@ Backward LM: p(t_1, t_2, ..., t_N) &= \prod_{k=1}^{N} p(t_k | t_{k+1}, t_{k+2}, 
 \end{align}</script><p>ELMo使用双向LSTM作为双向语言模型，最大化目标函数：</p>
 <script type="math/tex; mode=display">
 \sum_{k=1}^{N} (\log p(t_k | t_1, t_2, ..., t_{k-1}; \theta_x, \overrightarrow{\theta}_{LSTM}, \theta_s) \\
-+ \log p(t_k | t_1, t_2, ..., t_{k-1}; \theta_x, \overleftarrow{\theta}_{LSTM}, \theta_s))</script><p>其中$\theta_x$是token层的参数，$\theta_s$是Softmax层的参数。</p>
++ \log p(t_k | t_{k+1}, t_{k+2}, ..., t_{N}; \theta_x, \overleftarrow{\theta}_{LSTM}, \theta_s))</script><p>其中$\theta_x$是token层的参数，$\theta_s$是Softmax层的参数。</p>
 <h3 id="ELMo"><a href="#ELMo" class="headerlink" title="ELMo"></a>ELMo</h3><p>ELMo使用了语言模型的所有中间层状态。给定一个$L$层的双向语言模型，对于每个token $t_K$，它的中间层状态的集合如下：</p>
 <script type="math/tex; mode=display">
 \begin{align}
