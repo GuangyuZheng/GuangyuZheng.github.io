@@ -1,6 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title><![CDATA[《Semi-Supervised Sequence Modeling with Cross-View Training》阅读笔记]]></title>
+    <url>%2F2019%2F01%2F04%2FCVT%2F</url>
+    <content type="text"><![CDATA[研究内容这篇发表于EMNLP 2018的文章提出了CVT(Cross-View Training)。作者认为，预训练的一个缺点在于最开始的表征学习阶段没有利用到有标记数据，这使得预训练模型学到的表征只是通用的而不是针对目标任务的。CVT算法是一个半监督学习算法，利用了有标记数据与无标记数据来改善Bi-LSTM句编码器学习到的表征。 方法模型目标CVT的灵感来源于多视图学习（Multi-View Learning）,训练模型对于一个输入的不同view有相同的输出。 思路概览CVT为模型添加了辅助预测模块，它们的输入是模型中间表征的子集，对应的是输入样本的受限的view。 对于有标记的样本，CVT使用标准的有监督学习方法训练主预测模块，如下图所示（以命名实体识别任务为例）： 对于无标记的样本，CVT对有不同view作为输入的辅助预测模块进行训练，让它们的输出与主预测模块一致，如下图所示： 与多任务学习结合我们可以通过给共享的Bi-LSTM编码器添加其它任务的辅助预测模块，来实现CVT与多任务学习的结合。 对方法的思考 在无标记数据集上，CVT通过训练辅助预测模块，将它们的输出结果与能看到完整输入的主预测模块相匹配。由于主辅预测模块都是基于同一表征的，所以能改善表征的质量； 将CVT与多任务学习相结合，模型能够从无标记数据中创建适用于所有任务的标记数据，从而有效地提升模型的数据效率并降低训练时间； 由于运行预测模块的计算成本很低，所以多任务学习下的CVT并不比单任务学习下的CVT慢多少，但是模型的收敛速度大幅减少。]]></content>
+      <categories>
+        <category>论文阅读笔记</category>
+      </categories>
+      <tags>
+        <tag>NLP</tag>
+        <tag>表征学习</tag>
+        <tag>半监督学习</tag>
+      </tags>
+  </entry>
+  <entry>
     <title><![CDATA[《Deep contextualized word representations》阅读笔记]]></title>
     <url>%2F2019%2F01%2F02%2FDeep-contextualized-word-representations%2F</url>
     <content type="text"><![CDATA[研究内容这篇发表于NAACL 2018的文章提出了ELMo，ELMo是Embeddings from Language Models的缩写。顾名思义，ELMo是来自于语言模型的词语表征。作者认为好的词语表征应该能够解决以下两个问题： 能够对复杂的词语用法特点（例如语法和语义）进行建模 能够知道这些用法是如何随着语言环境发生变化的（例如一词多义） 作者将ELMo直接当作特征拼接到具体任务模型的词向量或者最高层的表示上，在QA，情感分析等6项NLP任务中，加入ELMo都能提升模型的表现。 方法概述双向语言模型对于一个包含$N$个tokens的序列$(t_1, t_2, …, t_N)$，前向语言模型计算的是给定$(t_1,…, t_{k-1})$, $t_k$出现的概率；反向语言模型与前向类似，只是序列的方向是相反的。具体可用以下公式表示： \begin{align} Forward LM: p(t_1, t_2, ..., t_N) &= \prod_{k=1}^{N} p(t_k | t_1, t_2, ..., t_{k-1}) \\ Backward LM: p(t_1, t_2, ..., t_N) &= \prod_{k=1}^{N} p(t_k | t_{k+1}, t_{k+2}, ..., t_{N}) \\ \end{align}ELMo使用双向LSTM作为双向语言模型，最大化目标函数： \sum_{k=1}^{N} (\log p(t_k | t_1, t_2, ..., t_{k-1}; \theta_x, \overrightarrow{\theta}_{LSTM}, \theta_s) \\ + \log p(t_k | t_{k+1}, t_{k+2}, ..., t_{N}; \theta_x, \overleftarrow{\theta}_{LSTM}, \theta_s))其中$\theta_x$是token层的参数，$\theta_s$是Softmax层的参数。 ELMoELMo使用了语言模型的所有中间层状态。给定一个$L$层的双向语言模型，对于每个token $t_K$，它的中间层状态的集合如下： \begin{align} R_k &= \{x_{k}^{LM}, \overrightarrow{h}_{k,j}^{LM}, \overleftarrow{h}_{k,j}^{LM} | j=1,...,L\} \\ &= \{h_{k,j}^{LM} | j=0,...,L\} \end{align}其中，$h_{k,0}^{LM}$是token层；对于每个双向LSTM层，$h_{k,j}^{LM} = [\overrightarrow{h}_{k,j}^{LM};\overleftarrow{h}_{k,j}^{LM}]$。 对于具体任务$task$，ELMo将集合$R_k$中的所有层进行线性组合，构建一维向量，具体公式如下： ELMo_{k}^{task} = E(R_k ; \theta^{task}) = \gamma^{task} \sum_{j=0}^{L} s_{j}^{task} h_{k,j}^{LM}其中，$s^{task}$是经过Softmax归一化后的权重，$\gamma^{task}$是标量，任务模型可以使用$\gamma^{task}$来对整个ELMo向量进行缩放，来辅助Optimization process。 对方法的思考 不同于传统的下文无关的词向量（每个词对应一个词向量），ELMo是上下文相关的（对于不同上下文的每个词的表示是不同的），因此有助于学习到丰富的词语表征； 深层网络有助于提取高级的特征，ELMo结合了语言模型中每层的状态来构建特征，这种做法有助于学习到丰富的词语表征。文章认为底层的LSTM捕获了语法信息，而高层的LSTM捕获了语义信息； ELMo考虑了网络正则化参数$\lambda$的大小，发现适合的$\lambda$是有益的； 在使用到具体任务之前，ELMo在任务的语料上进行了fine-tuning，这可以被视作进行了domain transfer。]]></content>
