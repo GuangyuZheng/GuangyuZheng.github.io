@@ -1,6 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title><![CDATA[《Model-Agnostic Meta-Learning for Fast Adaptation of Deep Networks》阅读笔记]]></title>
+    <url>%2F2019%2F01%2F07%2FMAML%2F</url>
+    <content type="text"><![CDATA[研究内容这篇发表于ICML 2017的文章提出了MAML（Model-Agnostic Meta-Learning）。Meta-Learning的目标是从多个学习任务中学习一个模型，这个模型只需要使用少量的训练样本就可以解决一个新的学习任务。MAML算法是一种模型无关的算法，可被用于任何使用梯度下降算法的模型，并且适用于多种学习任务，例如分类、回归和强化学习等等。 方法概述直观理解MAML算法的核心思想是对模型的初始参数进行训练，使模型经过新任务中的少量数据训练，就能够取得好的表现。从动态系统的角度来看，MAML算法的过程可以被当作最大化新任务损失函数对模型参数的敏感度，当敏感度高的时候，参数细微的变动就可以让task loss有大幅度下降。下图是MAML算法的示意图，其中$\mathcal{L}_{i}$和$\theta_{i}^{* }$分别是$\nabla task_i$的损失函数的梯度和经过adapting后的参数。 伪代码上图是MAML算法的伪代码。MAML算法将t个任务作为一个batch。MAML算法有两层循环，在内层循环中，对于batch中的每个任务$t_i$，计算对应损失函数的梯度并计算对应adapted的参数${\theta_i}^ \prime$；在外层循环中，根据 $\theta^\prime$ 对模型的参数$\theta$进行梯度下降。 对方法的思考 MAML算法的目标是最大化新任务损失函数对模型参数的敏感度，使得参数的细微变动就可以让task loss大幅度下降，起到很好的fine tune效果； MAML算法无需添加新的模型参数，同时对网络结构没有限制； 在adaptation中，MAML算法对数据量和梯度下降的次数没有限制。]]></content>
+      <categories>
+        <category>论文阅读笔记</category>
+      </categories>
+      <tags>
+        <tag>Meta-Learning</tag>
+        <tag>Few-Shot Learning</tag>
+      </tags>
+  </entry>
+  <entry>
     <title><![CDATA[《Semi-Supervised Sequence Modeling with Cross-View Training》阅读笔记]]></title>
     <url>%2F2019%2F01%2F04%2FCVT%2F</url>
     <content type="text"><![CDATA[研究内容这篇发表于EMNLP 2018的文章提出了CVT(Cross-View Training)。作者认为，预训练的一个缺点在于最开始的表征学习阶段没有利用到有标记数据，这使得预训练模型学到的表征只是通用的而不是针对目标任务的。CVT算法是一个半监督学习算法，利用了有标记数据与无标记数据来改善Bi-LSTM句编码器学习到的表征。 方法模型目标CVT的灵感来源于多视图学习（Multi-View Learning）,训练模型对于一个输入的不同view有相同的输出。 思路概览CVT为模型添加了辅助预测模块，它们的输入是模型中间表征的子集，对应的是输入样本的受限的view。 对于有标记的样本，CVT使用标准的有监督学习方法训练主预测模块，如下图所示（以命名实体识别任务为例）： 对于无标记的样本，CVT对有不同view作为输入的辅助预测模块进行训练，让它们的输出与主预测模块一致，如下图所示： 与多任务学习结合我们可以通过给共享的Bi-LSTM编码器添加其它任务的辅助预测模块，来实现CVT与多任务学习的结合。 对方法的思考 在无标记数据集上，CVT通过训练辅助预测模块，将它们的输出结果与能看到完整输入的主预测模块相匹配。由于主辅预测模块都是基于同一表征的，所以能改善表征的质量； 将CVT与多任务学习相结合，模型能够从无标记数据中创建适用于所有任务的标记数据，从而有效地提升模型的数据效率并降低训练时间； 由于运行预测模块的计算成本很低，所以多任务学习下的CVT并不比单任务学习下的CVT慢多少，但是模型的收敛速度大幅减少。]]></content>
