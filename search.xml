@@ -1,6 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title><![CDATA[《Meta-Learning for Low-Resource Neural Machine Translation》阅读笔记]]></title>
+    <url>%2F2019%2F01%2F11%2FMetaNMT%2F</url>
+    <content type="text"><![CDATA[研究内容这篇发表于EMNLP 2018的文章提出了MetaNMT。这篇文章研究的是神经机器翻译（NMT）领域里的少样本学习任务。作者通过将不同的language pair当作不同的任务，使用MAML算法[1]获取来获取较好的初始化模型参数，使得在少样本的新language pair任务中能够快速学习；此外，作者认为在NMT领域中，不同language pair的输入与输出空间不同，直接使用MAML算法不能很好地处理这些任务，所以使用ULR[2]表示不同语种从而获得合适的embedding，与MAML算法结合，解决了上述问题。 方法概述Meta-LearningMeta-Learning的学习过程是通过一系列源任务$\{T^1, T^2, …, T^K\}$，来寻找合适的初始化参数$\theta^0$，使得目标任务$T^0$只需少量的训练样本就有好的表现。可以用如下公式表示： \theta^* = Learn(T^0; MetaLearn(T^1, T^2, ..., T^K))Learn阶段对于MetaNMT，该阶段可以用如下公式表示： \begin{align} Learn(D_T; \theta^0) &= \mathop{\arg\max}_{\theta} \mathcal{L}^{D_T} (\theta) \\ &= \mathop{\arg\max}_{\theta} \sum_{(X,Y) \in D_T} \log p(Y|X, \theta) - \beta ||\theta-\theta^0||^2 \end{align}其中等式右侧第一项是普通NMT模型的目标函数；第二项的目的是确保新学习的模型不会偏离初始参数太多，缓解了当训练数据不够时的过拟合问题。 MetaLearn阶段MetaLearn阶段最大化目标函数$\mathcal{L}(\theta)$，公式表示如下（详细做法可以参考MAML算法）： \mathcal{L}(\theta) = E_k E_{D_{T^k}, D_{T^k}'} [\sum_{(X,Y) \in D_{T^k}'} \log p(Y;X|Learn(D_{T^k};\theta))]其中，$k \sim \mathcal{u}(\{1, …, k\})$ 对方法的思考 使用MAML算法来获取较好的初始化参数； 考虑到不同语种的输入输出空间不同，使用ULR获取合适的embedding； 在Learn阶段，通过目标函数的第二项，确保新学习的模型不会偏离初始参数太多.以缓解训练数据不够导致的过拟合问题。 Reference[1] Finn, Chelsea, Pieter Abbeel, and Sergey Levine. Model-agnostic meta-learning for fast adaptation of deep networks. In ICML, 2017.[2] Jiatao Gu, Hany Hassan, Jacob Devlin, and Victor O.K. Li. Universal neural machine translation for extremely low resource languages. In NAACL 2018.]]></content>
+      <tags>
+        <tag>NLP</tag>
+        <tag>Meta-Learning</tag>
+        <tag>机器翻译</tag>
+      </tags>
+  </entry>
+  <entry>
     <title><![CDATA[《Model-Agnostic Meta-Learning for Fast Adaptation of Deep Networks》阅读笔记]]></title>
     <url>%2F2019%2F01%2F07%2FMAML%2F</url>
     <content type="text"><![CDATA[研究内容这篇发表于ICML 2017的文章提出了MAML（Model-Agnostic Meta-Learning）。Meta-Learning的目标是从多个学习任务中学习一个模型，这个模型只需要使用少量的训练样本就可以解决一个新的学习任务。MAML算法是一种模型无关的算法，可被用于任何使用梯度下降算法的模型，并且适用于多种学习任务，例如分类、回归和强化学习等等。 方法概述直观理解MAML算法的核心思想是对模型的初始参数进行训练，使模型经过新任务中的少量数据训练，就能够取得好的表现。从动态系统的角度来看，MAML算法的过程可以被当作最大化新任务损失函数对模型参数的敏感度，当敏感度高的时候，参数细微的变动就可以让task loss有大幅度下降。下图是MAML算法的示意图，其中$\mathcal{L}_{i}$和$\theta_{i}^{* }$分别是$\nabla task_i$的损失函数的梯度和经过adapting后的参数。 伪代码上图是MAML算法的伪代码。MAML算法将t个任务作为一个batch。MAML算法有两层循环，在内层循环中，对于batch中的每个任务$t_i$，计算对应损失函数的梯度并计算对应adapted的参数${\theta_i}^ \prime$；在外层循环中，根据 $\theta^\prime$ 对模型的参数$\theta$进行梯度下降。 对方法的思考 MAML算法的目标是最大化新任务损失函数对模型参数的敏感度，使得参数的细微变动就可以让task loss大幅度下降，起到很好的fine tune效果； MAML算法无需添加新的模型参数，同时对网络结构没有限制； 在adaptation中，MAML算法对数据量和梯度下降的次数没有限制。]]></content>
