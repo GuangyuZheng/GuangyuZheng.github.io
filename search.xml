@@ -1,6 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title><![CDATA[《Dissecting Contextual Word Embeddings:Architecture and Representation》阅读笔记]]></title>
+    <url>%2F2019%2F01%2F25%2FDissecting-Contextual-Word-Embeddings%2F</url>
+    <content type="text"><![CDATA[研究内容这篇发表于EMNLP2018的文章对不同的双向语言模型（例如LSTM，CNN或者Transformer）进行研究学习。实验对比了由不同语言模型得到的词表征在下游任务中的表现和定性的特性，结果表明： 语言模型的学习速度和准确性之间存在tradeoff； 双向语言模型能学到质量好于词向量（GloVe）的词语表征； 双向语言模型在不同层中能学到包含不同信息的表征：在词嵌入层只学到了形态学上的表征；在底层的上下文层学到了局部的语法表征；在上层的上下文层学到了长跨度的语义表征（例如指代coreference）。 方法概述文章对比了LSTM，Transformer和Gated CNN三种双向语言模型，如下图所示。]]></content>
+      <categories>
+        <category>论文阅读笔记</category>
+      </categories>
+      <tags>
+        <tag>NLP</tag>
+        <tag>语言模型</tag>
+        <tag>表征学习</tag>
+      </tags>
+  </entry>
+  <entry>
     <title><![CDATA[《Meta-Learning for Low-Resource Neural Machine Translation》阅读笔记]]></title>
     <url>%2F2019%2F01%2F11%2FMetaNMT%2F</url>
     <content type="text"><![CDATA[研究内容这篇发表于EMNLP 2018的文章提出了MetaNMT。这篇文章研究的是神经机器翻译（NMT）领域里的少样本学习任务。作者通过将不同的language pair当作不同的任务，使用MAML算法[1]获取来获取较好的初始化模型参数，使得在少样本的新language pair任务中能够快速学习；此外，作者认为在NMT领域中，不同language pair的输入与输出空间不同，直接使用MAML算法不能很好地处理这些任务，所以使用ULR[2]表示不同语种从而获得合适的embedding，与MAML算法结合，解决了上述问题。 方法概述Meta-LearningMeta-Learning的学习过程是通过一系列源任务$\{T^1, T^2, …, T^K\}$，来寻找合适的初始化参数$\theta^0$，使得目标任务$T^0$只需少量的训练样本就有好的表现。可以用如下公式表示： \theta^* = Learn(T^0; MetaLearn(T^1, T^2, ..., T^K))Learn阶段对于MetaNMT，该阶段可以用如下公式表示： \begin{align} Learn(D_T; \theta^0) &= \mathop{\arg\max}_{\theta} \mathcal{L}^{D_T} (\theta) \\ &= \mathop{\arg\max}_{\theta} \sum_{(X,Y) \in D_T} \log p(Y|X, \theta) - \beta ||\theta-\theta^0||^2 \end{align}其中等式右侧第一项是普通NMT模型的目标函数；第二项的目的是确保新学习的模型不会偏离初始参数太多，缓解了当训练数据不够时的过拟合问题。 MetaLearn阶段MetaLearn阶段最大化目标函数$\mathcal{L}(\theta)$，公式表示如下（详细做法可以参考MAML算法）： \mathcal{L}(\theta) = E_k E_{D_{T^k}, D_{T^k}'} [\sum_{(X,Y) \in D_{T^k}'} \log p(Y;X|Learn(D_{T^k};\theta))]其中，$k \sim \mathcal{u}(\{1, …, k\})$ 对方法的思考 使用MAML算法来获取较好的初始化参数； 考虑到不同语种的输入输出空间不同，使用ULR获取合适的embedding； 在Learn阶段，通过目标函数的第二项，确保新学习的模型不会偏离初始参数太多.以缓解训练数据不够导致的过拟合问题。 Reference[1] Finn, Chelsea, Pieter Abbeel, and Sergey Levine. Model-agnostic meta-learning for fast adaptation of deep networks. In ICML, 2017.[2] Jiatao Gu, Hany Hassan, Jacob Devlin, and Victor O.K. Li. Universal neural machine translation for extremely low resource languages. In NAACL 2018.]]></content>
