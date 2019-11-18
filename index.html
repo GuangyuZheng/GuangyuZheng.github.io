@@ -281,6 +281,184 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/11/17/LSL/">
+
+    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Simon Zheng">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Simon Zheng">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2019/11/17/LSL/" itemprop="url">《Shaping Visual Representations with Language for Few-shot Classiﬁcation》阅读笔记</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-11-17T14:29:00+08:00">
+                2019-11-17
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing">
+                  <a href="/categories/论文阅读笔记/" itemprop="url" rel="index">
+                    <span itemprop="name">论文阅读笔记</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+             <span id="/2019/11/17/LSL/" class="leancloud_visitors" data-flag-title="《Shaping Visual Representations with Language for Few-shot Classiﬁcation》阅读笔记">
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">阅读次数&#58;</span>
+               
+                 <span class="leancloud-visitors-count"></span>
+             </span>
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="研究内容"><a href="#研究内容" class="headerlink" title="研究内容"></a>研究内容</h2><p>人类可以通过语言来进行学习，例如我们仅需要通过语句”A robin is a bird with a red belly and brown feathers.”，无需通过观察上千张更知鸟的图片就可以学习到更知鸟的样貌，此外语句也可以帮助构建我们的观察事物的方式（例如对于新的鸟类我们可以主要关注于belly和feather）。</p>
+<p>这篇发表于NeurIPS 2019的文章提出了LSL(Language-shaped Learning)[1]，作者提出了一种使用NLP任务来辅助图像表征学习的方法，在小样本的图像分类任务上取得了提升；此外，这种方法在模型的测试阶段不需要语言作为输入，在实际场景下（对于未见过的类别来说，对应的linguistic supervision一般是不存在的）更为实用。</p>
+<h2 id="方法"><a href="#方法" class="headerlink" title="方法"></a>方法</h2><h3 id="相关知识"><a href="#相关知识" class="headerlink" title="相关知识"></a>相关知识</h3><p>这篇文章研究的是小样本学习，即N-way，K-shot learning：</p>
+<h4 id="N-way-K-shot-Learning"><a href="#N-way-K-shot-Learning" class="headerlink" title="N-way, K-shot Learning"></a>N-way, K-shot Learning</h4><p>对于一个任务t，有N个<em>support</em> classes$\{S_1^{(t)},…,S_N^{(t)}\}$，每个class包含<em>K</em>个examples: $S_n^{(t)}=\{x_{n,1}^{(t)},…,x_{n,k}^{(t)}\}$。每个任务有<em>M</em>个<em>query</em> examples: $Q^{(t)}=\{(x_{1}^{(t)},y_1^{(t)}),…,(x_M^{(t)},y_M^{(t)})\}$。任务目标是预测第m个query example所对应的类别$y_m^{(t)}\in\{1,…,N\}$。</p>
+<p>LSL可以被用于任意一个学习输入embedding的meta-learning框架。这里作者以prototype networks作为示例：</p>
+<h4 id="Prototype-Networks"><a href="#Prototype-Networks" class="headerlink" title="Prototype Networks"></a>Prototype Networks</h4><ol>
+<li>使用$f_\theta$学习类别<em>n</em>的每个example的embeddings,取平均后得到<em>“prototype”</em>$c_n$：<script type="math/tex; mode=display">
+c_n=\frac{1}{k}\sum_{k=1}^{K}f_\theta(x_{n,k})</script></li>
+<li>对于$(x_m,y_m)$，它属于类别<em>n</em>的概率与某个相似度函数$s(c_n,f_\theta(x_m,y_m))$成正比：<script type="math/tex; mode=display">
+p_\theta(\hat{y_m}=n|x_m)\propto{exp(s(c_n,f_\theta(x_m,y_m)))}</script></li>
+<li>损失函数：<script type="math/tex; mode=display">
+L_{CLS}(\theta)=-\sum_{m=1}^{M}log p_\theta(\hat{y_m}=y_m|x_m)</script></li>
+</ol>
+<h3 id="加入语言（Language-shaped-Learning）"><a href="#加入语言（Language-shaped-Learning）" class="headerlink" title="加入语言（Language-shaped Learning）"></a>加入语言（Language-shaped Learning）</h3><p>假设对于每个类$S_n$都有$J_n$条相关的语言描述$W_n=\{w_1,…,w_{j_n}\}$。<br>作者让$f_\theta$在学习prototype的同时也被用于解码类别的语言描述：</p>
+<ol>
+<li>$\tilde{c_n}$是所有属于类别<em>n</em>的support和query的examples去平均得到的prototype。</li>
+<li>定义一个语言模型$g_\phi$，根据$\tilde{c_n}$得到概率分布$g_\phi(\hat{w_j}|\tilde{c_n})$，得到对应的损失函数:<script type="math/tex; mode=display">
+L_{NL}(\theta,\phi)=-\sum_{n=1}^{N}\sum_{j=1}^{J_n}g_\phi(\hat{w_j}|\tilde{c_n})</script></li>
+<li>在训练时，最小化$L_{CLS}(\theta)+\lambda_{NL} L_{NL}(\theta,\phi)$，其中$\lambda_{NL}$是超参数。</li>
+<li>在测试时，丢弃$g_\phi$，仅使用$f_\theta$进行分类（在模型的测试阶段不需要语言作为输入）。</li>
+</ol>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><ol>
+<li>在训练过程中使用语言数据可以增强模型的泛化能力。</li>
+<li>本质上LSL是通过为损失函数添加了一个将$f_\theta$用于预测语句的正则项来增强模型的泛化能力。</li>
+</ol>
+<h2 id="Reference"><a href="#Reference" class="headerlink" title="Reference"></a>Reference</h2><p>[1] Mu, Jesse, Percy Liang, and Noah Goodman. “Shaping Visual Representations with Language for Few-shot Classification.” In <em>NeurIPS</em>, 2019.</p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/01/25/Dissecting-Contextual-Word-Embeddings/">
 
     <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
@@ -1294,7 +1472,7 @@ ELMo_{k}^{task} = E(R_k ; \theta^{task}) = \gamma^{task} \sum_{j=0}^{L} s_{j}^{t
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">6</span>
+                  <span class="site-state-item-count">7</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -1316,7 +1494,7 @@ ELMo_{k}^{task} = E(R_k ; \theta^{task}) = \gamma^{task} \sum_{j=0}^{L} s_{j}^{t
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">7</span>
+                  <span class="site-state-item-count">9</span>
                   <span class="site-state-item-name">标签</span>
                 </a>
               </div>

@@ -1,6 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title><![CDATA[《Shaping Visual Representations with Language for Few-shot Classiﬁcation》阅读笔记]]></title>
+    <url>%2F2019%2F11%2F17%2FLSL%2F</url>
+    <content type="text"><![CDATA[研究内容人类可以通过语言来进行学习，例如我们仅需要通过语句”A robin is a bird with a red belly and brown feathers.”，无需通过观察上千张更知鸟的图片就可以学习到更知鸟的样貌，此外语句也可以帮助构建我们的观察事物的方式（例如对于新的鸟类我们可以主要关注于belly和feather）。 这篇发表于NeurIPS 2019的文章提出了LSL(Language-shaped Learning)[1]，作者提出了一种使用NLP任务来辅助图像表征学习的方法，在小样本的图像分类任务上取得了提升；此外，这种方法在模型的测试阶段不需要语言作为输入，在实际场景下（对于未见过的类别来说，对应的linguistic supervision一般是不存在的）更为实用。 方法相关知识这篇文章研究的是小样本学习，即N-way，K-shot learning： N-way, K-shot Learning对于一个任务t，有N个support classes$\{S_1^{(t)},…,S_N^{(t)}\}$，每个class包含K个examples: $S_n^{(t)}=\{x_{n,1}^{(t)},…,x_{n,k}^{(t)}\}$。每个任务有M个query examples: $Q^{(t)}=\{(x_{1}^{(t)},y_1^{(t)}),…,(x_M^{(t)},y_M^{(t)})\}$。任务目标是预测第m个query example所对应的类别$y_m^{(t)}\in\{1,…,N\}$。 LSL可以被用于任意一个学习输入embedding的meta-learning框架。这里作者以prototype networks作为示例： Prototype Networks 使用$f_\theta$学习类别n的每个example的embeddings,取平均后得到“prototype”$c_n$： c_n=\frac{1}{k}\sum_{k=1}^{K}f_\theta(x_{n,k}) 对于$(x_m,y_m)$，它属于类别n的概率与某个相似度函数$s(c_n,f_\theta(x_m,y_m))$成正比： p_\theta(\hat{y_m}=n|x_m)\propto{exp(s(c_n,f_\theta(x_m,y_m)))} 损失函数： L_{CLS}(\theta)=-\sum_{m=1}^{M}log p_\theta(\hat{y_m}=y_m|x_m) 加入语言（Language-shaped Learning）假设对于每个类$S_n$都有$J_n$条相关的语言描述$W_n=\{w_1,…,w_{j_n}\}$。作者让$f_\theta$在学习prototype的同时也被用于解码类别的语言描述： $\tilde{c_n}$是所有属于类别n的support和query的examples去平均得到的prototype。 定义一个语言模型$g_\phi$，根据$\tilde{c_n}$得到概率分布$g_\phi(\hat{w_j}|\tilde{c_n})$，得到对应的损失函数: L_{NL}(\theta,\phi)=-\sum_{n=1}^{N}\sum_{j=1}^{J_n}g_\phi(\hat{w_j}|\tilde{c_n}) 在训练时，最小化$L_{CLS}(\theta)+\lambda_{NL} L_{NL}(\theta,\phi)$，其中$\lambda_{NL}$是超参数。 在测试时，丢弃$g_\phi$，仅使用$f_\theta$进行分类（在模型的测试阶段不需要语言作为输入）。 总结 在训练过程中使用语言数据可以增强模型的泛化能力。 本质上LSL是通过为损失函数添加了一个将$f_\theta$用于预测语句的正则项来增强模型的泛化能力。 Reference[1] Mu, Jesse, Percy Liang, and Noah Goodman. “Shaping Visual Representations with Language for Few-shot Classification.” In NeurIPS, 2019.]]></content>
+      <categories>
+        <category>论文阅读笔记</category>
+      </categories>
+      <tags>
+        <tag>NLP</tag>
+        <tag>CV</tag>
+        <tag>小样本学习</tag>
+        <tag>表征学习</tag>
+      </tags>
+  </entry>
+  <entry>
     <title><![CDATA[《Dissecting Contextual Word Embeddings:Architecture and Representation》阅读笔记]]></title>
     <url>%2F2019%2F01%2F25%2FDissecting-Contextual-Word-Embeddings%2F</url>
     <content type="text"><![CDATA[研究内容这篇发表于EMNLP2018的文章对不同的双向语言模型（例如LSTM，CNN或者Transformer）进行研究学习。实验对比了由不同语言模型得到的词表征在下游任务中的表现和定性的特性，结果表明： 语言模型的学习速度和准确性之间存在tradeoff； 双向语言模型能学到质量好于词向量（GloVe）的词语表征； 双向语言模型在不同层中能学到包含不同信息的表征：在词嵌入层只学到了形态学上的表征；在底层的上下文层学到了局部的语法表征；在上层的上下文层学到了长跨度的语义表征（例如指代coreference）。 方法概述文章对比了LSTM，Transformer和Gated CNN三种双向语言模型，如下图所示。]]></content>
@@ -9,8 +23,8 @@
       </categories>
       <tags>
         <tag>NLP</tag>
-        <tag>语言模型</tag>
         <tag>表征学习</tag>
+        <tag>语言模型</tag>
       </tags>
   </entry>
   <entry>
@@ -60,8 +74,8 @@
       </categories>
       <tags>
         <tag>NLP</tag>
-        <tag>语言模型</tag>
         <tag>表征学习</tag>
+        <tag>语言模型</tag>
       </tags>
   </entry>
   <entry>
